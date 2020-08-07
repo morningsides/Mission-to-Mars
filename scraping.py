@@ -6,7 +6,7 @@ import datetime as dt
 
 # Set the executable path and initialize the chrome browser in splinter
 executable_path = {'executable_path': '/usr/local/bin/chromedriver'}
-browser = Browser('chrome', **executable_path)
+browser = Browser('chrome', **executable_path, headless=True)
 
 
 def scrape_all():
@@ -20,7 +20,8 @@ def scrape_all():
         "news_paragraph": news_paragraph,
         "featured_image": featured_image(browser),
         "facts": mars_facts(),
-        "last_modified": dt.datetime.now()
+        "last_modified": dt.datetime.now(),
+        "hemispheres": mars_hemispheres(browser)
     }
 
     # Stop webdriver and return data
@@ -103,6 +104,51 @@ def mars_facts():
 
     # Convert dataframe into HTML format, add bootstrap
     return df.to_html()
+
+
+def mars_hemispheres(browser):
+
+    # List to hold our urls
+    urlList = []
+    urlDictArray = []
+
+    # Base URL
+    baseUrl = 'https://astrogeology.usgs.gov'
+
+    # Visit URL
+    url = f'{baseUrl}/search/results?q=hemisphere+enhanced&k1=target&v1=Mars'
+    browser.visit(url)
+
+    # Optional delay for loading the page
+    browser.is_element_present_by_css("div.full-content", wait_time=1)
+
+    # create an html object to parse
+    html = browser.html
+    parseHtml = soup(html, 'html.parser')
+
+    # Grab the produt-item divs
+    try:
+        item_divs = parseHtml.findAll('a', class_='itemLink product-item')
+        for item in item_divs:
+            if (baseUrl + item['href']) not in urlList:
+                urlList.append(baseUrl + item['href'])
+    except AttributeError:
+        return None
+
+    # Go to child pages to get image url and title
+    for url in urlList:
+        urlDict = {}
+        browser.visit(url)
+        html = browser.html
+        parseHtml = soup(html, 'html.parser')
+        try:
+            urlDict['img_url'] = parseHtml.findAll(
+                'a', string='Original')[0]['href']
+            urlDict['title'] = parseHtml.find('h2', class_='title').text
+            urlDictArray.append(urlDict)
+        except AttributeError:
+            return None
+    return urlDictArray
 
 
 if __name__ == "__main__":

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Mission to Mars</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+
+</head>
+
+<body>
+    <div class="container">
+        <div class="jumbotron text-center">
+            <h1>Mission to Mars</h1>
+            <p><a class="btn btn-primary btn-lg" href="/scrape" role="button">Scrape New Data</a></p>
+        </div>
+        <!-- Mars News -->
+        <div class="row" id="mars-news">
+            <div class="col-md-12">
+                <div class="media">
+                    <div class="media-body">
+                        <h2>Latest Mars News</h2>
+                        <h4 class="media-heading">{{mars.news_title}}</h4>
+                        <p>{{ mars.news_paragraph }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Mars Featured Image -->
+        <div class="row" id="mars-featured-image">
+            <div class="col-md-8">
+                <h2>Featured Mars Image</h2>
+                <img src="{{ mars.featured_image }}" class="img-fluid" alt="Responsive image">
+            </div>
+            <!-- Mars Facts -->
+            <div class="col-md-4">
+                <div class="row p-3 mb-2 bg-warning text-dark border border-primary" id="mars-facts">
+                    <h4>Mars Facts</h4>
+                    {{ mars.facts | safe }}
+                </div>
+                <!-- Mars Hemispheres -->
+                <div class="row p-3 mb-2 bg-success text-white border border-primary" id="mars-hemispheres">
+                    <h4>Mars Hemispheres Pictures</h4>
+                    <p>Click on each link to download a fancy pic</p>
+                    {% for dict_item in mars.hemispheres %}
+                    <a class="btn btn-primary btn-sm" href=" {{ dict_item['img_url'] }} "
+                        role=" button">{{ dict_item['title'] }}</a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
